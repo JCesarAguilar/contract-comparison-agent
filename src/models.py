@@ -35,25 +35,3 @@ class ContractChangeOutput(BaseModel):
         if not value.strip():
             raise ValueError("El resumen de cambios no puede estar vacío.")
         return value.strip()
-
-
-# Prueba: python -m src.models
-if __name__ == "__main__":
-    from pydantic import ValidationError
-
-    valid = {
-        "sections_changed": ["2. Plazo", "3. Pago"],
-        "topics_touched": ["Vigencia", "Precio"],
-        "summary_of_the_change": "Modificación: el plazo pasa de 12 a 24 meses.",
-    }
-    print("Válido:", ContractChangeOutput.model_validate(valid))
-
-    invalid = {
-        "sections_changed": "2. Plazo",       # Debería ser una lista
-        "summary_of_the_change": "   ",       # Vacío
-        "risk_level": "alto",                 # Campo que no existe
-    }                                         # Falta topics_touched
-    try:
-        ContractChangeOutput.model_validate(invalid)
-    except ValidationError as error:
-        print(f"\nInválido, {error.error_count()} errores encontrados:\n{error}")
