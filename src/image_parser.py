@@ -23,7 +23,7 @@ class ContractParsingError(Exception):
     """No se pudo obtener una transcripción válida del contrato."""
 
 
-def validate_image(image_path: str) -> Path:
+def validate_image(image_path: str | Path) -> Path:
     """Revisa que la imagen exista, sea JPG o PNG, no esté vacía y no sea demasiado grande."""
     path = Path(image_path)
 
@@ -50,7 +50,7 @@ def encode_image(path: Path) -> str:
     return f"data:image/{image_type};base64,{image_base64}"
 
 
-def parse_contract_image(image_path: str) -> dict:
+def parse_contract_image(image_path: str | Path) -> dict:
     """Envía la imagen a GPT-4o y devuelve el texto del contrato y los tokens usados."""
     path = validate_image(image_path)
     image_url = encode_image(path)

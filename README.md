@@ -137,6 +137,15 @@ Salida:
 
 La traza completa queda disponible en Langfuse, en **Tracing**.
 
+### Tests
+
+```bash
+pytest
+```
+
+Cubren la validación de imágenes y el schema de salida, sin llamar a la API.
+La calidad de los agentes se evalúa con los casos de prueba de `data/test_contracts/`.
+
 ## Decisiones técnicas
 
 **Visión con GPT-4o en lugar de OCR.** Un LLM multimodal lee y entiende el documento en un
