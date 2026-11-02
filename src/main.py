@@ -4,6 +4,7 @@ Uso: python -m src.main <imagen_contrato_original> <imagen_enmienda>
 """
 
 import sys
+import asyncio
 
 from langfuse import get_client
 
@@ -38,6 +39,14 @@ def parse_step(span_name: str, image_path: str) -> str:
     return parsed["text"]
 
 
+async def parse_both(original_path: str, amendment_path: str) -> tuple[str, str]:
+    """Transcribe las dos imágenes al mismo tiempo: son independientes entre sí."""
+    return await asyncio.gather(
+        asyncio.to_thread(parse_step, "parse_original_contract", original_path),
+        asyncio.to_thread(parse_step, "parse_amendment_contract", amendment_path),
+    )
+
+
 def run_pipeline(original_path: str, amendment_path: str) -> ContractChangeOutput:
     """Ejecuta el flujo completo dentro de una traza de Langfuse."""
     with langfuse.start_as_current_observation(
@@ -50,9 +59,10 @@ def run_pipeline(original_path: str, amendment_path: str) -> ContractChangeOutpu
             "extraction_model": config.EXTRACTION_MODEL,
         },
     ) as root:
-        # Pasos 1 y 2: imágenes → texto
-        original_text = parse_step("parse_original_contract", original_path)
-        amendment_text = parse_step("parse_amendment_contract", amendment_path)
+        # Pasos 1 y 2 en paralelo: ninguno depende del otro
+        original_text, amendment_text = asyncio.run(
+            parse_both(original_path, amendment_path)
+        )
 
         # Paso 3: Agente 1 construye el mapa de secciones
         with langfuse.start_as_current_observation(
