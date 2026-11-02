@@ -23,6 +23,7 @@ MAX_IMAGE_MB = 20
 ALLOWED_EXTENSIONS = [".jpg", ".jpeg", ".png"]
 
 # --- Agentes ---
-AGENT_MODEL = "gpt-4o"
+CONTEXTUALIZATION_MODEL = "gpt-4o-mini"  # Tarea simple: emparejar secciones
+EXTRACTION_MODEL = "gpt-4o"  # Tarea crítica: detectar cambios sutiles
 AGENT_TEMPERATURE = 0
 AGENT_MAX_TOKENS = 4096

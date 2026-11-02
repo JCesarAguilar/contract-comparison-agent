@@ -16,22 +16,24 @@ class ExtractionAgent:
 
     def __init__(self):
         prompt = ChatPromptTemplate.from_messages(
-                    [
-                        ("system", EXTRACTION_SYSTEM_PROMPT),
-                        ("human", EXTRACTION_USER_PROMPT),
-                    ]
-                )
+            [
+                ("system", EXTRACTION_SYSTEM_PROMPT),
+                ("human", EXTRACTION_USER_PROMPT),
+            ]
+        )
         llm = ChatOpenAI(
-            model=config.AGENT_MODEL,
+            model=config.EXTRACTION_MODEL,
             temperature=config.AGENT_TEMPERATURE,
             max_completion_tokens=config.AGENT_MAX_TOKENS,
             timeout=config.API_TIMEOUT_SECONDS,
             max_retries=config.API_MAX_RETRIES,
         )
-      
+
         # Structured outputs: la API obliga al modelo a responder con el schema de Pydantic.
         # include_raw=True conserva el mensaje original para leer tokens y finish_reason.
-        structured_llm = llm.with_structured_output(ContractChangeOutput, include_raw=True)
+        structured_llm = llm.with_structured_output(
+            ContractChangeOutput, include_raw=True
+        )
         self.chain = prompt | structured_llm
 
     def run(self, original_text: str, amendment_text: str, context_map: str) -> dict:
@@ -81,4 +83,6 @@ if __name__ == "__main__":
     result = ExtractionAgent().run(original, amendment, context_map)
 
     print(result["result"].model_dump_json(indent=2))
-    print(f"\nTokens -> entrada: {result['input_tokens']} | salida: {result['output_tokens']}")
+    print(
+        f"\nTokens -> entrada: {result['input_tokens']} | salida: {result['output_tokens']}"
+    )

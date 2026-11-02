@@ -22,13 +22,18 @@ def parse_step(span_name: str, image_path: str) -> str:
         as_type="generation",
         name=span_name,
         model=config.VISION_MODEL,
-        input={"image_path": image_path},  # La ruta, no la imagen: evita registrar datos pesados
+        input={
+            "image_path": image_path
+        },  # La ruta, no la imagen: evita registrar datos pesados
     ) as generation:
         parsed = parse_contract_image(image_path)
         generation.update(
             output=parsed["text"],
             model=parsed["model"],
-            usage_details={"input": parsed["input_tokens"], "output": parsed["output_tokens"]},
+            usage_details={
+                "input": parsed["input_tokens"],
+                "output": parsed["output_tokens"],
+            },
         )
     return parsed["text"]
 
@@ -39,7 +44,11 @@ def run_pipeline(original_path: str, amendment_path: str) -> ContractChangeOutpu
         as_type="span",
         name="contract-analysis",
         input={"original": original_path, "amendment": amendment_path},
-        metadata={"vision_model": config.VISION_MODEL, "agent_model": config.AGENT_MODEL},
+        metadata={
+            "vision_model": config.VISION_MODEL,
+            "contextualization_model": config.CONTEXTUALIZATION_MODEL,
+            "extraction_model": config.EXTRACTION_MODEL,
+        },
     ) as root:
         # Pasos 1 y 2: imágenes → texto
         original_text = parse_step("parse_original_contract", original_path)
@@ -49,20 +58,23 @@ def run_pipeline(original_path: str, amendment_path: str) -> ContractChangeOutpu
         with langfuse.start_as_current_observation(
             as_type="generation",
             name="contextualization_agent",
-            model=config.AGENT_MODEL,
+            model=config.CONTEXTUALIZATION_MODEL,
             input={"original_text": original_text, "amendment_text": amendment_text},
         ) as generation:
             context = ContextualizationAgent().run(original_text, amendment_text)
             generation.update(
                 output=context["context_map"],
-                usage_details={"input": context["input_tokens"], "output": context["output_tokens"]},
+                usage_details={
+                    "input": context["input_tokens"],
+                    "output": context["output_tokens"],
+                },
             )
 
         # Paso 4: Agente 2 usa el mapa para extraer los cambios (handoff)
         with langfuse.start_as_current_observation(
             as_type="generation",
             name="extraction_agent",
-            model=config.AGENT_MODEL,
+            model=config.EXTRACTION_MODEL,
             input={
                 "context_map": context["context_map"],
                 "original_text": original_text,
@@ -75,7 +87,10 @@ def run_pipeline(original_path: str, amendment_path: str) -> ContractChangeOutpu
             result: ContractChangeOutput = extraction["result"]
             generation.update(
                 output=result.model_dump(),
-                usage_details={"input": extraction["input_tokens"], "output": extraction["output_tokens"]},
+                usage_details={
+                    "input": extraction["input_tokens"],
+                    "output": extraction["output_tokens"],
+                },
             )
 
         root.update(output=result.model_dump())

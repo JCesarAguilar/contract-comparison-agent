@@ -24,7 +24,7 @@ class ContextualizationAgent:
             ]
         )
         llm = ChatOpenAI(
-            model=config.AGENT_MODEL,
+            model=config.CONTEXTUALIZATION_MODEL,
             temperature=config.AGENT_TEMPERATURE,
             max_completion_tokens=config.AGENT_MAX_TOKENS,
             timeout=config.API_TIMEOUT_SECONDS,
