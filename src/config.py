@@ -5,8 +5,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Fallar al inicio si falta la clave, en vez de fallar a mitad del proceso
-if not os.getenv("OPENAI_API_KEY"):
-    raise RuntimeError("Falta OPENAI_API_KEY en el archivo .env")
+for key in ("OPENAI_API_KEY", "LANGFUSE_PUBLIC_KEY", "LANGFUSE_SECRET_KEY"):
+    if not os.getenv(key):
+        raise RuntimeError(f"Falta {key} en el archivo .env")
 
 # --- Cliente OpenAI ---
 API_TIMEOUT_SECONDS = 60
