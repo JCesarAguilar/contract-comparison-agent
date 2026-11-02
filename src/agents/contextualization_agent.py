@@ -1,7 +1,5 @@
 """Agente 1: construye el mapa estructural de ambos contratos. No extrae cambios."""
 
-import sys
-
 from langchain_core.exceptions import ModelError
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
@@ -59,22 +57,3 @@ class ContextualizationAgent:
             "input_tokens": usage["input_tokens"] if usage else 0,
             "output_tokens": usage["output_tokens"] if usage else 0,
         }
-
-
-# Prueba: python -m src.agents.contextualization_agent <original.jpg> <enmienda.jpg>
-if __name__ == "__main__":
-    from src.image_parser import parse_contract_image
-
-    if len(sys.argv) != 3:
-        sys.exit(
-            "Uso: python -m src.agents.contextualization_agent <original> <enmienda>"
-        )
-
-    original = parse_contract_image(sys.argv[1])["text"]
-    amendment = parse_contract_image(sys.argv[2])["text"]
-    result = ContextualizationAgent().run(original, amendment)
-
-    print(result["context_map"])
-    print(
-        f"\nTokens -> entrada: {result['input_tokens']} | salida: {result['output_tokens']}"
-    )

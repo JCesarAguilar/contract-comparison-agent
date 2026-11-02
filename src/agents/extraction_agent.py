@@ -1,7 +1,5 @@
 """Agente 2: detecta los cambios entre ambos contratos y devuelve un resultado validado."""
 
-import sys
-
 from langchain_core.exceptions import ModelError
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
@@ -67,22 +65,3 @@ class ExtractionAgent:
             "input_tokens": usage["input_tokens"] if usage else 0,
             "output_tokens": usage["output_tokens"] if usage else 0,
         }
-
-
-# Prueba: python -m src.agents.extraction_agent <original.jpg> <enmienda.jpg>
-if __name__ == "__main__":
-    from src.agents.contextualization_agent import ContextualizationAgent
-    from src.image_parser import parse_contract_image
-
-    if len(sys.argv) != 3:
-        sys.exit("Uso: python -m src.agents.extraction_agent <original> <enmienda>")
-
-    original = parse_contract_image(sys.argv[1])["text"]
-    amendment = parse_contract_image(sys.argv[2])["text"]
-    context_map = ContextualizationAgent().run(original, amendment)["context_map"]
-    result = ExtractionAgent().run(original, amendment, context_map)
-
-    print(result["result"].model_dump_json(indent=2))
-    print(
-        f"\nTokens -> entrada: {result['input_tokens']} | salida: {result['output_tokens']}"
-    )
