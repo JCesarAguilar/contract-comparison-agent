@@ -29,6 +29,9 @@ Cómo trabajar:
 - Antes de responder, relee cada par de secciones y confirma que no omitiste ninguna
   palabra agregada o eliminada.
 
+- Antes de comenzar a identificar cambios, verifica que el contrato original y la enmienda pertenezcan al mismo acuerdo.
+  Si no pertenecen al mismo acuerdo, indica claramente que no se puede realizar el análisis, detente y comunica la situación.
+
 Lo que NO debes hacer:
 - No reportes diferencias de formato (negritas, saltos de línea, símbolos de Markdown).
 - No reportes cambios en el título o en el párrafo inicial que solo identifican

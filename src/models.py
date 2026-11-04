@@ -25,6 +25,7 @@ class ContractChangeOutput(BaseModel):
         description=(
             "Descripción detallada de cada cambio: indica si es una adición, "
             "eliminación o modificación, y el valor anterior y el nuevo."
+            "Si el contrato original y la enmienda no pertenecen al mismo acuerdo, se debe indicar claramente y no se debe continuar con el análisis."
         )
     )
 
